@@ -1,0 +1,1089 @@
+<!DOCTYPE html>
+<meta charset="utf-8"/>
+<html>
+<head>
+<style>
+
+.heading {
+	font-style: italic;
+	font-size: 70px;
+}
+.tableTeamHeader {
+	font-size: 25px;
+}
+
+.group_table{
+	border: 3px solid black;
+	margin-bottom: 40px;
+	margin-left: 30px;
+	margin-right: 30px;
+	width: 30%;
+}
+.group_icon{
+	width: 50px;
+	height: 50px;
+}
+
+.table_left{
+	float:left
+}
+.table_right{
+	float:right
+}
+.center{
+	text-align: center;
+}
+.header_tablerow{
+	width: 100%
+	border: 1px solid black;
+	
+}
+
+.matchTable{
+	border: 3px solid black;
+	margin-top: 5%;
+	margin-bottom: 20px;
+	margin-left: 2%;
+	margin-right: 2%;
+	width: 40%;
+}
+
+.winPercentBox{
+	width:40px;
+	height: 40px;
+	margin-left: 10%;
+	margin-right: 10%;
+}
+.matchIcon{
+	margin-left: 10%;
+	margin-right: 10%;
+	width: 50px;
+	height: 50px;
+}
+.centerIcon{
+	width: 15%;
+	height: width
+}
+
+.winnerBox{
+	background-color:yellow;
+    box-shadow:0px 0px 0px 10px yellow inset;
+}
+
+.select{
+	background-color:rgb(204,204,255);
+}
+
+.tool_button{
+	width : 110px;
+	height : 50px;
+}
+
+
+</style>
+<script>
+
+//need to add match records
+//win% box resets
+//SKT icon looks fugly
+
+
+var teams = [ "SKT" , "EDG" , "C9", "AHQ", "LZ", "IMT", "FNC" , "GAM" , "SSG", "RNG", "G2", "FB" , "TSM", "WE", "FW", "MSF"];
+var teamsName = ["SK telecom T1", "Edward Gaming", "Cloud 9", "ahq e-Sports Club", "Longzhu Gaming", "Immortals", "Fnatic", "GIGABYTE Marines", "Samsung Galaxy", "Royal Never Give Up" , "G2 Esports", "1907 Fenerbahce Esport", "Team Solo Mid", "Team WE", "Flash Wolves" , "Misfits Gaming"];
+var teamsScore = ["0-0", "0-0", "0-0", "0-0","0-0", "0-0", "0-0", "0-0","0-0", "0-0", "0-0", "0-0","0-0", "0-0", "0-0", "0-0"];
+var teamsRecord;
+var games = [];
+var gamesLoser = [];
+var gamesTeamA = [];
+var gamesTeamB = [];
+var groupA = ["SKT", "EDG", "C9", "AHQ"];
+var groupB = ["LZ", "FNC", "GAM", "IMT"];
+var groupC = ["RNG", "SSG", "G2", "FB"];
+var groupD = ["TSM", "WE", "FW", "MSF"];
+var groups = [groupA, groupB, groupC, groupD];
+var gameCounter = 0;
+var selectTeam = "";
+
+function drawAllGroup(){
+
+	teamsRecord = [];
+	for(i=0; i < teams.length; i++){
+		teamsRecord[i] = [];
+		for(j=0; j < teams.length; j++){
+			teamsRecord[i][j] = "";
+		}
+	}
+	
+	drawGroup(0);
+	drawGroup(1);
+	drawGroup(2);
+	drawGroup(3);
+	
+	//Week 1
+	//Day 1
+	createGame("RNG", "FB");
+	createGame("G2", "SSG");
+	createGame("LZ", "IMT");
+	createGame("FNC", "GAM");
+	createGame("SKT", "C9");
+	createGame("EDG", "AHQ");
+	//Day 2
+	createGame("FW", "TSM");
+	createGame("WE", "MSF");
+	createGame("IMT", "FNC");
+	createGame("LZ", "GAM");
+	createGame("AHQ", "C9");
+	createGame("EDG", "SKT");
+	//Day 3
+	createGame("TSM", "WE");
+	createGame("FW", "MSF");
+	createGame("G2", "FB");
+	createGame("SSG", "RNG");
+	createGame("SKT", "AHQ");
+	createGame("C9", "EDG");
+	//Day 4
+	createGame("WE", "FW");
+	createGame("MSF", "TSM");
+	createGame("GAM", "IMT");
+	createGame("FNC", "LZ");
+	createGame("FB", "SSG");
+	createGame("RNG", "G2");
+	
+	//Week 2
+	//Day 1
+	createGame("IMT", "GAM");
+	createGame("LZ", "FNC");
+	createGame("FNC", "IMT");
+	createGame("GAM", "LZ");
+	createGame("GAM", "FNC");
+	createGame("IMT", "LZ");
+	
+	
+	//Day 2
+	createGame("G2", "RNG");
+	createGame("SSG", "FB");
+	createGame("SSG", "G2");
+	createGame("FB", "RNG");
+	createGame("FB", "G2");
+	createGame("RNG", "SSG");
+	
+	//Day 3
+	createGame("MSF", "FW");
+	createGame("WE", "TSM");
+	createGame("FW", "WE");
+	createGame("TSM", "MSF");
+	createGame("TSM", "FW");
+	createGame("MSF", "WE");
+	//Day 4
+	createGame("AHQ", "SKT");
+	createGame("EDG", "C9");
+	createGame("AHQ", "EDG");
+	createGame("C9", "SKT");
+	createGame("C9", "AHQ");
+	createGame("SKT", "EDG");
+	
+
+	
+	preset();
+	setOnClick();
+	updateScore();
+	teamSelector("team00");
+	//console.log(teamsRecord);
+}
+
+function drawGroup(groupNumber){
+	orderGroup(groupNumber);
+	var tempGroup = groups[groupNumber];
+	//console.log(tempGroup);
+	for( i = 0; i < tempGroup.length; i++){
+		document.getElementById("picture"+groupNumber+""+i).src = "Images/Team "+tempGroup[i]+".png";
+		document.getElementById("teamName"+groupNumber+""+i).innerHTML = teamsName[teams.indexOf(tempGroup[i])];
+		document.getElementById("teamScore"+groupNumber+""+i).innerHTML = teamsScore[teams.indexOf(tempGroup[i])];
+	}		
+}
+function orderGroup(groupNumber){
+
+	//console.log("TSM " + teamsScore[12] + " WE " + teamsScore[13]);
+	//console.log("FW " + teamsScore[14] + " MSF " + teamsScore[15]);
+	var tempGroup = [];
+	//console.log(groupNumber);
+	var targetGroup = groups[groupNumber];
+	for( i = 0; i < targetGroup.length; i++){
+		tempGroup.push(targetGroup[i]);
+	}
+	var tempTeam = tempGroup[0];
+	groups[groupNumber] = [];
+	
+	while(tempGroup.length != 0){
+		tempTeam = tempGroup[0];
+		for( i = 1; i < tempGroup.length; i++){
+			if( returnWinner(tempTeam, tempGroup[i]) != tempTeam){
+				tempTeam = tempGroup[i];
+			}
+		}
+		groups[groupNumber].push(tempTeam);
+		tempGroup.splice(tempGroup.indexOf(tempTeam),1);
+	}
+	
+	groupA = groups[0];
+	groupB = groups[1];
+	groupC = groups[2];
+	groupD = groups[3];
+	//console.log("resultant ordered group is " + groups[groupNumber]);
+	
+	
+}
+
+
+
+function returnWinner(teamA, teamB){
+
+	//console.log("compare " + teamA + " and " + teamB);
+	
+//	console.log("order group " + teamsScore[12] + "," + teams.indexOf(teamA) + ","+ teams.indexOf(teamB));
+	var scoreA = teamsScore[teams.indexOf(teamA)];
+	var scoreB = teamsScore[teams.indexOf(teamB)];
+	if(parseInt(scoreA.charAt(0)) > parseInt(scoreB.charAt(0))){
+		return teamA;
+	}
+	else if(parseInt(scoreA.charAt(0)) < parseInt(scoreB.charAt(0))){
+		return teamB;
+	}
+	else {
+		if(teamsRecord[teams.indexOf(teamA)][teams.indexOf(teamB)] > teamsRecord[teams.indexOf(teamB)][teams.indexOf(teamA)]){
+			return teamA;
+		}
+		if(teamsRecord[teams.indexOf(teamB)][teams.indexOf(teamA)] > teamsRecord[teams.indexOf(teamA)][teams.indexOf(teamB)]){
+			return teamB;
+		}
+		return teamA;
+	}
+}
+
+function createGame(teamA, teamB){
+//stores id of TR as game[0]
+	var newGame = document.createElement("tr");
+	newGame.id="game"+gameCounter;
+	
+	//store the gameCounter name in innerHTML of first win box
+	var winBoxTD = document.createElement("td");
+	var winBox = document.createElement("input");
+	winBox.type = "text";
+	winBox.classList.add("winPercentBox");
+	winBox.classList.add("table_left");
+	winBox.value = "50";
+	winBox.innerHTML = gameCounter;
+	winBox.id = "game" + gameCounter+"win1";
+	winBoxTD.appendChild(winBox);
+	newGame.appendChild(winBoxTD);
+	
+	var teamAIcon = document.createElement("td");
+	var temp = document.createElement("IMG");
+	temp.classList.add("matchIcon");
+	temp.classList.add("table_left");
+	temp.id = "game" + gameCounter+"teamA";
+	temp.src ="Images/Team " + teamA + ".png";
+	temp.innerHTML = teamA;
+	teamAIcon.appendChild(temp);
+	newGame.appendChild(teamAIcon);
+	
+	var VS = document.createElement("td");
+	VS.id = "game"+gameCounter+"VS";
+	VS.classList.add(gameCounter+"");
+	VS.classList.add("center");
+	VS.classList.add("winnerBox");
+	VS.innerHTML = "VS";
+	newGame.appendChild(VS);
+
+	
+	var teamBIcon = document.createElement("td");
+	var temp2 = document.createElement("IMG");
+	temp2.classList.add("matchIcon");
+	temp2.classList.add("table_right");
+	temp2.id = "game" + gameCounter+"teamB";
+	temp2.src ="Images/Team " + teamB + ".png";
+	temp2.innerHTML = teamB;
+	teamBIcon.appendChild(temp2);
+	newGame.appendChild(teamBIcon);
+	
+	//store the loserTeam name in innerHTML of second win box
+	var winBoxTD2 = document.createElement("td");
+	var winBox2 = document.createElement("input");
+	winBox2.type = "text";
+	winBox2.classList.add("winPercentBox");
+	winBox2.classList.add("table_right");
+	winBox2.value = "50";
+	winBox2.innerHTML = "VS";
+	winBox2.id = "game" + gameCounter+"win2";
+	winBoxTD2.appendChild(winBox2);
+	newGame.appendChild(winBoxTD2);
+	
+	gamesLoser.push("VS");
+	gamesTeamA.push(teamA);
+	gamesTeamB.push(teamB);
+	games.push("VS");
+	if(gameCounter<24){
+		document.getElementById("matchTable1").appendChild(newGame);
+	}
+	else {
+		document.getElementById("matchTable2").appendChild(newGame);
+	}
+	gameCounter++;
+	
+	VS.addEventListener('click', function ( e ) {
+    	setWinner(e.target,VS.classList[0]);
+    	//console.log(getGroupNumber(teamsName[teams.indexOf(temp.innerHTML)]));
+    	//console.log(VS.classList[0]);
+    	//console.log(gamesTeamA[VS.classList[0]]);
+    	updateScore2(getGroupNumber(teamsName[teams.indexOf(gamesTeamA[VS.classList[0]])]));
+    	predictTeam();
+  	});
+  	temp.addEventListener('click', function ( e ) {
+    	setWinner(e.target,VS.classList[0]);
+    	updateScore2(getGroupNumber(teamsName[teams.indexOf(gamesTeamA[VS.classList[0]])]));
+    	predictTeam();
+  	});
+  	temp2.addEventListener('click', function ( e ) {
+    	setWinner(e.target,VS.classList[0]);
+    	updateScore2(getGroupNumber(teamsName[teams.indexOf(gamesTeamA[VS.classList[0]])]));
+    	predictTeam();
+  	});
+  	winBox.addEventListener('blur', function(e) {
+  		if(!(Number.isInteger(Number.parseInt(winBox.value)))){
+  			winBox.value = 50;
+  		}
+  		else if (winBox.value > 100){
+  			winBox.value = 100;
+  		}
+  		else if (winBox.value < 0){
+  			winBox.value = 0;
+  		}
+  		winBox2.value = 100-winBox.value;
+  		predictTeam();
+  	});
+	
+	winBox2.addEventListener('blur', function(e) {
+  		if(!(Number.isInteger(Number.parseInt(winBox2.value)))){
+  			winBox2.value = 50;
+  		}
+  		else if (winBox2.value > 100){
+  			winBox2.value = 100;
+  		}
+  		else if (winBox2.value < 0){
+  			winBox2.value = 0;
+  		}
+  		winBox.value = 100-winBox2.value;
+  		predictTeam();
+  	});
+	
+}
+
+//also renders %win section
+function updateScore(){
+	resetScore();
+	for(i = 0; i < games.length; i++){
+		if(games[i] ==""  || games[i] == "VS"){
+			continue;
+		}
+		else {
+			//console.log(games[i]);
+			var tempScore = teamsScore[teams.indexOf(games[i])];
+			tempScore = (parseInt(tempScore.charAt(0))+1)+"-" + parseInt(tempScore.charAt(2));
+			var tempScore2 = teamsScore[teams.indexOf(gamesLoser[i])];
+			tempScore2 = (parseInt(tempScore2.charAt(0)))+"-" + (parseInt(tempScore2.charAt(2))+1);
+			teamsScore[teams.indexOf(games[i])] = tempScore;
+			teamsScore[teams.indexOf(gamesLoser[i])] = tempScore2;
+		}
+	}
+	drawGroup(0);
+	drawGroup(1);
+	drawGroup(2);
+	drawGroup(3);
+	if(selectTeam != ""){
+		document.getElementById("team_select_name").innerHTML = selectTeam;
+		document.getElementById("team_select_image").src = "Images/Team "+teams[teamsName.indexOf(selectTeam)]+ ".png";
+	}
+	reSelectTeam();
+	//console.log(teamsRecord[teamsName.indexOf(selectTeam)]);
+}
+function updateScore2(groupNumber){
+	resetScore();
+	for(i = 0; i < games.length; i++){
+		if(games[i] ==""  || games[i] == "VS"){
+			continue;
+		}
+		else {
+			var tempScore = teamsScore[teams.indexOf(games[i])];
+			tempScore = (parseInt(tempScore.charAt(0))+1)+"-" + parseInt(tempScore.charAt(2));
+			var tempScore2 = teamsScore[teams.indexOf(gamesLoser[i])];
+			tempScore2 = (parseInt(tempScore2.charAt(0)))+"-" + (parseInt(tempScore2.charAt(2))+1);
+			teamsScore[teams.indexOf(games[i])] = tempScore;
+			teamsScore[teams.indexOf(gamesLoser[i])] = tempScore2;
+		}
+	}
+	drawGroup(groupNumber);
+	if(selectTeam != ""){
+		document.getElementById("team_select_name").innerHTML = selectTeam;
+		document.getElementById("team_select_image").src = "Images/Team "+teams[teamsName.indexOf(selectTeam)]+ ".png";
+	}
+	reSelectTeam();
+}
+function resetScore(){
+	for(i=0;i<teamsScore.length;i++){
+		teamsScore[i] = "0-0";
+	}
+}
+function addWinToMatrix(teamA, teamB){
+	if (teamsRecord[teams.indexOf(teamA)][teams.indexOf(teamB)] == ""){
+		teamsRecord[teams.indexOf(teamA)][teams.indexOf(teamB)] = "1";
+	}
+	else if (teamsRecord[teams.indexOf(teamA)][teams.indexOf(teamB)] == "1"){
+		teamsRecord[teams.indexOf(teamA)][teams.indexOf(teamB)] = "2";
+	}
+}
+function subtractToMatrix(teamA, teamB){
+	if (teamsRecord[teams.indexOf(teamA)][teams.indexOf(teamB)] == "2"){
+		teamsRecord[teams.indexOf(teamA)][teams.indexOf(teamB)] = "1";
+	}
+	else if (teamsRecord[teams.indexOf(teamA)][teams.indexOf(teamB)] == "1"){
+		teamsRecord[teams.indexOf(teamA)][teams.indexOf(teamB)] = "";
+	}
+}
+function setWinner(element, counter ){
+	//first undo the score that was set before
+	//console.log("counter is " + counter);
+	//console.log("elemnet is " + element);
+	if(gamesLoser[counter] != "VS"){
+		if(gamesLoser[counter] == gamesTeamA[counter]){
+			//console.log(gamesTeamA[counter] + " " + gamesTeamB[counter]);
+			
+			subtractToMatrix(gamesTeamB[counter], gamesTeamA[counter]);
+		}
+		else {
+			//console.log(gamesTeamA[counter] + " " + gamesTeamB[counter]);
+			subtractToMatrix(gamesTeamA[counter], gamesTeamB[counter]);
+		}
+	}
+	
+	//console.log("after subtract" );
+
+	document.getElementById("game"+counter+"teamA").classList.remove("winnerBox");
+	document.getElementById("game"+counter+"teamB").classList.remove("winnerBox");
+	document.getElementById("game"+counter+"VS").classList.remove("winnerBox");
+	element.classList.add("winnerBox");
+	
+	if(element.innerHTML == "VS"){
+		games[counter] = "VS";
+	}
+	else {
+		games[counter] = (element.src).substring(element.src.length-7, element.src.length-4);
+	}
+	if (games[counter].charAt(0) == 0){
+		games[counter] = games[counter].substring(1);
+		//console.log(games[counter]);
+	}
+	if(element.id ==( "game"+counter+"teamA")){
+		gamesLoser[counter] = gamesTeamB[counter];	
+		addWinToMatrix(gamesTeamA[counter], gamesTeamB[counter]);
+	}
+	else if(element.id == ( "game"+counter+"teamB")){
+		gamesLoser[counter] = gamesTeamA[counter];
+		addWinToMatrix(gamesTeamB[counter] , gamesTeamA[counter] );
+	}
+	else {
+		gamesLoser[counter] = "VS";
+	}
+	
+	//console.log("after add" );
+	
+}
+
+function reSelectTeam(){
+	if(selectTeam == "") return;
+	var nodeList;
+	var xi, xj;
+	for(i=0; i < 4; i++){
+		for(j=0; j <4; j++){
+			nodeList = document.getElementById("team"+i+""+j).childNodes;
+			if(nodeList[3].childNodes[0].nodeValue == selectTeam){
+				xi = i;
+				xj = j;
+				break;
+			}
+			
+		}
+	}
+	for(i=0; i<4; i++){
+		for (j=0; j<4; j++){
+			dummyName = "team"+i+""+j;
+			document.getElementById(dummyName).classList.remove("select");
+		}
+	}
+	document.getElementById("team"+xi+""+xj).classList.add("select");
+}
+function teamSelector(thisTeam){
+	
+	//console.log(document.getElementById("team_select_name"));
+	var dummyName;
+	for(i=0; i<4; i++){
+		for (j=0; j<4; j++){
+			dummyName = "team"+i+""+j;
+			document.getElementById(dummyName).classList.remove("select");
+		}
+	}
+	document.getElementById(thisTeam).classList.add("select");
+	var childNodes = document.getElementById(thisTeam).childNodes;
+	selectTeam = childNodes[3].childNodes[0].nodeValue;
+	if(selectTeam != ""){
+		document.getElementById("team_select_name").innerHTML = selectTeam;
+		document.getElementById("team_select_image").src = "Images/Team "+teams[teamsName.indexOf(selectTeam)]+ ".png";
+	}
+	predictTeam();
+}
+function setOnClick(){
+	var dummyName;
+	for(i=0; i<4; i++){
+		for (j=0; j<4; j++){
+			dummyName = "team"+i+""+j;
+			document.getElementById(dummyName).addEventListener('click', function(e){
+    			teamSelector(e.target.parentNode.id);
+			});
+		}
+	}
+}
+
+
+function preset(){
+	setWinner(document.getElementById("game"+0+"teamA"),0);
+	setWinner(document.getElementById("game"+1+"teamB"),1);
+	setWinner(document.getElementById("game"+2+"teamA"),2);
+	setWinner(document.getElementById("game"+3+"teamB"),3);
+	setWinner(document.getElementById("game"+4+"teamA"),4);
+	setWinner(document.getElementById("game"+5+"teamB"),5);
+	setWinner(document.getElementById("game"+6+"teamB"),6);
+	setWinner(document.getElementById("game"+7+"teamA"),7);
+	setWinner(document.getElementById("game"+8+"teamA"),8);
+	setWinner(document.getElementById("game"+9+"teamA"),9);
+	setWinner(document.getElementById("game"+10+"teamB"),10);
+	setWinner(document.getElementById("game"+11+"teamB"),11);
+	setWinner(document.getElementById("game"+12+"teamA"),12);
+	setWinner(document.getElementById("game"+13+"teamB"),13);
+	setWinner(document.getElementById("game"+14+"teamA"),14);
+	setWinner(document.getElementById("game"+15+"teamB"),15);
+	setWinner(document.getElementById("game"+16+"teamA"),16);
+	setWinner(document.getElementById("game"+17+"teamA"),17);
+	setWinner(document.getElementById("game"+18+"teamA"),18);
+	setWinner(document.getElementById("game"+19+"teamA"),19);
+	setWinner(document.getElementById("game"+20+"teamB"),20);
+	setWinner(document.getElementById("game"+21+"teamB"),21);
+	setWinner(document.getElementById("game"+22+"teamB"),22);
+	setWinner(document.getElementById("game"+23+"teamA"),23);
+	
+	
+	
+	
+	
+		
+	setWinner(document.getElementById("game"+24+"teamB"),24);
+	setWinner(document.getElementById("game"+25+"teamA"),25);
+	setWinner(document.getElementById("game"+26+"teamA"),26);
+	setWinner(document.getElementById("game"+27+"teamB"),27);
+	setWinner(document.getElementById("game"+28+"teamB"),28);
+	setWinner(document.getElementById("game"+29+"teamB"),29);
+	setWinner(document.getElementById("game"+30+"teamA"),30);
+	setWinner(document.getElementById("game"+31+"teamA"),31);
+	setWinner(document.getElementById("game"+32+"teamA"),32);
+	setWinner(document.getElementById("game"+33+"teamB"),33);
+	setWinner(document.getElementById("game"+34+"teamB"),34);
+	setWinner(document.getElementById("game"+35+"teamA"),35);
+	/*
+	setWinner(document.getElementById("game"+36+"teamA"),36);
+	setWinner(document.getElementById("game"+37+"teamB"),37);
+	setWinner(document.getElementById("game"+38+"teamB"),38);
+	setWinner(document.getElementById("game"+39+"teamB"),39);
+	setWinner(document.getElementById("game"+40+"teamA"),40);
+	setWinner(document.getElementById("game"+41+"teamB"),41);
+	*/
+}
+function resetAll(){
+	for(i =0; i<games.length; i++){
+		setWinner(document.getElementById("game"+i+"VS"),i);
+		document.getElementById("game"+i+"win1").value = 50;
+		document.getElementById("game"+i+"win2").value = 50;
+	}
+	updateScore();
+	predictTeam();
+}
+function resetClean(){
+	for(i =0; i<games.length; i++){
+		setWinner(document.getElementById("game"+i+"VS"),i);
+		document.getElementById("game"+i+"win1").value = 50;
+		document.getElementById("game"+i+"win2").value = 50;
+	}
+	preset();
+	updateScore();
+	predictTeam();
+}
+
+
+//to find out win percent
+var predictChance = 0.0;
+var predictChanceWithTie = 0.0;
+function predictTeam(){
+	if(selectTeam=="") return;
+	predictChance = 0.0;
+	predictChanceWithTie = 0.0;
+	predictMatch(0,1.0);
+	predictChance*=100;
+	predictChance = predictChance.toFixed(2);
+	predictChanceWithTie*=100;
+	predictChanceWithTie -= predictChance;
+	predictChanceWithTie = predictChanceWithTie.toFixed(2);
+	document.getElementById("team_select_win1").innerHTML=predictChance + "% Knockout Stage";
+	document.getElementById("team_select_win2").innerHTML=predictChanceWithTie + "% Tie Breaker";
+	
+	orderGroup(0);
+	orderGroup(1);
+	orderGroup(2);
+	orderGroup(3);
+	
+}
+function getGroupNumber(teamName){
+	if (groupA.includes(teams[teamsName.indexOf(teamName)])){
+		return 0;
+	}
+	if (groupB.includes(teams[teamsName.indexOf(teamName)])){
+		return 1;
+	}
+	if (groupC.includes(teams[teamsName.indexOf(teamName)])){
+		return 2;
+	}
+	return 3;
+}
+function getGroup(groupNumber){
+	if(groupNumber==0){
+		return groupA;
+	}
+	if(groupNumber==1){
+		return groupB;
+	}
+	if(groupNumber==2){
+		return groupC;
+	}
+	return groupD;
+}
+function hasTeam(teamA, teamB){
+	//console.log("GROUP " + getGroup(getGroupNumber(selectTeam)) + " WITH TEAM " + selectTeam);
+	return getGroup(getGroupNumber(selectTeam)).includes(teamA) || getGroup(getGroupNumber(selectTeam)).includes(teamB);
+}
+function topTwo(withTieBreaker){
+	var group = getGroup(getGroupNumber((selectTeam)));
+	var rankGroup = [];
+	var teamPlace = group.indexOf(teams[teamsName.indexOf(selectTeam)]);
+	
+	var rankCounter = 1;
+	var currentScore = teamsScore[teams.indexOf(group[0])];
+	rankGroup[0] = rankCounter;
+	var sameChain = 1;
+	//console.log("=============start");
+	//console.log("current score " + currentScore);
+	for (i=1; i<4; i++){
+		//console.log("i = " + i);
+		//console.log("current score " + currentScore);
+		//score is greater than next
+		if (currentScore != teamsScore[teams.indexOf(group[i])]){
+			rankCounter++;
+			rankGroup[i] = rankCounter;
+			sameChain = 1;
+			currentScore = teamsScore[teams.indexOf(group[i])];
+			//console.log("greater than next score");
+		}
+		
+		//score is equal to next, but win tiebreaker, also not 3chain yet
+		else if (currentScore == teamsScore[teams.indexOf(group[i])] && 
+				 returnWinnerFinish(group[i-1],group[i]) &&
+				 sameChain < 2 ){
+			rankCounter++;
+			rankGroup[i] = rankCounter;
+			sameChain++;
+			//console.log("equal to next score, but win tie breaker");
+		}
+		
+		//score is equal to next, but do not win tiebreaker, also not 3chain yet
+		else if (currentScore == teamsScore[teams.indexOf(group[i])] && 
+				 !returnWinnerFinish(group[i-1],group[i]) &&
+				 sameChain < 2 ){
+			rankGroup[i] = rankCounter;
+			sameChain++;
+			//console.log("equal than next score, but not win tiebreaker");
+		}
+		
+		//score is equal to next, but not 3chain, so all equal rank
+		else if (currentScore == teamsScore[teams.indexOf(group[i])] &&
+				 sameChain == 2 ){
+			rankCounter = rankGroup[i-2];
+			sameChain++;
+			rankGroup[i-1] = rankCounter;
+			rankGroup[i]= rankCounter;
+			rankCounter++;
+			//console.log("equal to next score, but 3 in row already");
+		}
+		
+		//all  scores are the same
+		else if (currentScore == teamsScore[teams.indexOf(group[i])] &&
+				 sameChain == 3 ){
+			rankGroup[i] = rankGroup[i-1];
+			//console.log("4 score in row");
+				 
+		}
+		else {
+			console.log("ERRROROROEROEREOWRIOWEQRIOQWEROIWEQROQWRWEAFSDJLK;error, should never reach here");
+		}
+		
+		//console.log(sameChain);
+		//console.log(rankGroup);
+	
+	}
+	
+	/*
+	console.log(rankGroup);
+	console.log(group);
+	console.log("ssg: " + teamsRecord[8] + " " + teamsScore[8]);
+	console.log("rng: " + teamsRecord[9] + " " + teamsScore[9]);
+	console.log("g2: " + teamsRecord[10] + " " + teamsScore[10]);
+	console.log("fb: " + teamsRecord[11] + " " + teamsScore[11]);
+	console.log(rankGroup[teamPlace]);
+	console.log("+++++++++");
+	*/
+	
+	if(withTieBreaker){
+		if(rankGroup[teamPlace] ==1 ){
+			//console.log( selectTeam + " makes it out");
+			return true;
+		}
+		if(rankGroup[teamPlace] ==2 && rankGroup[1] != 1 ){
+			//console.log( selectTeam + " makes it out");
+			return true;
+		}
+		else {
+			//console.log( selectTeam + " does not makes it out");
+			return false;
+		}
+	}
+	if(!withTieBreaker){
+		if(rankGroup[teamPlace] ==1 && rankGroup[2]!=1){
+			//console.log( selectTeam + " makes it out");
+			return true;
+		}
+		if(rankGroup[teamPlace] == 2 && rankGroup[1] != 1 && rankGroup[2] !=2 ){
+			//console.log( selectTeam + " makes it out");
+			return true;
+		}
+		else {
+			//console.log( selectTeam + " does not makes it out");
+			return false;
+		}
+		
+	}
+	//console.log("+++++++++");
+	
+	
+	
+
+}
+function returnWinnerFinish(teamA, teamB){
+	//console.log(teamA + "/" + teamB);
+	var scoreA = teamsScore[teams.indexOf(teamA)];
+	var scoreB = teamsScore[teams.indexOf(teamB)];
+	if(parseInt(scoreA.charAt(0)) > parseInt(scoreB.charAt(0))){
+		return true;
+	}
+	else if(parseInt(scoreA.charAt(0)) < parseInt(scoreB.charAt(0))){
+		return false;
+	}
+	else {
+		if(teamsRecord[teams.indexOf(teamA)][teams.indexOf(teamB)] > teamsRecord[teams.indexOf(teamB)][teams.indexOf(teamA)]){
+			return true;
+		}
+		if(teamsRecord[teams.indexOf(teamB)][teams.indexOf(teamA)] > teamsRecord[teams.indexOf(teamA)][teams.indexOf(teamB)]){
+			return false;
+		}
+		return false;
+	}
+}
+
+
+function predictMatch(matchNum, chance){
+	
+	if(matchNum == games.length){
+		orderGroup(getGroupNumber(selectTeam));
+		
+		
+		if(topTwo(false)){
+			predictChance += chance;
+		}
+		if(topTwo(true)){
+			predictChanceWithTie += chance;
+		}
+		
+		
+		return;
+	}
+	
+	if(games[matchNum] == "VS" && hasTeam( (gamesTeamA[matchNum]),(gamesTeamB[matchNum]))){
+		var chanceA = ((document.getElementById("game"+matchNum+"win1").value) / 100.0);
+		//console.log(gamesTeamA[matchNum] + " VS " + gamesTeamB[matchNum]);
+		//team A wins
+		var tempScore = teamsScore[teams.indexOf(gamesTeamA[matchNum])];
+		tempScore = (parseInt(tempScore.charAt(0))+1)+"-" + parseInt(tempScore.charAt(2));
+		var tempScore2 = teamsScore[teams.indexOf(gamesTeamB[matchNum])];
+		tempScore2 = (parseInt(tempScore2.charAt(0)))+"-" + (parseInt(tempScore2.charAt(2))+1);
+		teamsScore[teams.indexOf(gamesTeamA[matchNum])] = tempScore;
+		teamsScore[teams.indexOf(gamesTeamB[matchNum])] = tempScore2;
+		addWinToMatrix(gamesTeamA[matchNum],gamesTeamB[matchNum] );
+		//console.log(gamesTeamA[matchNum] + " score A win: " + teamsScore[teams.indexOf(gamesTeamA[matchNum])]);
+		//console.log(gamesTeamB[matchNum] + " score A win: " + teamsScore[teams.indexOf(gamesTeamB[matchNum])]);
+		matchNum++;
+		predictMatch(matchNum, parseFloat(chance)*parseFloat(chanceA));
+		matchNum--;
+		
+		
+		
+		
+		
+		//undo teamA win
+		tempScore = teamsScore[teams.indexOf(gamesTeamA[matchNum])];
+		tempScore = (parseInt(tempScore.charAt(0))-1)+"-" + parseInt(tempScore.charAt(2));
+		tempScore2 = teamsScore[teams.indexOf(gamesTeamB[matchNum])];
+		tempScore2 = (parseInt(tempScore2.charAt(0)))+"-" + (parseInt(tempScore2.charAt(2))-1);
+		teamsScore[teams.indexOf(gamesTeamA[matchNum])] = tempScore;
+		teamsScore[teams.indexOf(gamesTeamB[matchNum])] = tempScore2;
+		subtractToMatrix(gamesTeamA[matchNum],gamesTeamB[matchNum] );
+		
+		
+		//console.log(gamesTeamA[matchNum] + " score A undo: " + teamsScore[teams.indexOf(gamesTeamA[matchNum])]);
+		//console.log(gamesTeamB[matchNum] + " score A undo: " + teamsScore[teams.indexOf(gamesTeamB[matchNum])]);
+		
+		
+		//team B wins
+		var tempScore = teamsScore[teams.indexOf(gamesTeamB[matchNum])];
+		tempScore = (parseInt(tempScore.charAt(0))+1)+"-" + parseInt(tempScore.charAt(2));
+		var tempScore2 = teamsScore[teams.indexOf(gamesTeamA[matchNum])];
+		tempScore2 = (parseInt(tempScore2.charAt(0)))+"-" + (parseInt(tempScore2.charAt(2))+1);
+		teamsScore[teams.indexOf(gamesTeamB[matchNum])] = tempScore;
+		teamsScore[teams.indexOf(gamesTeamA[matchNum])] = tempScore2;
+		addWinToMatrix(gamesTeamB[matchNum],gamesTeamA[matchNum] );
+	
+		
+		//console.log(gamesTeamA[matchNum] + " score B win: " + teamsScore[teams.indexOf(gamesTeamA[matchNum])]);
+		//console.log(gamesTeamB[matchNum] + " score B win: " + teamsScore[teams.indexOf(gamesTeamB[matchNum])]);
+		matchNum++;
+		predictMatch(matchNum, chance*(1.0-chanceA));
+		matchNum--;
+		
+		//undo teamB win
+		tempScore = teamsScore[teams.indexOf(gamesTeamB[matchNum])];
+		tempScore = (parseInt(tempScore.charAt(0))-1)+"-" + parseInt(tempScore.charAt(2));
+		tempScore2 = teamsScore[teams.indexOf(gamesTeamA[matchNum])];
+		tempScore2 = (parseInt(tempScore2.charAt(0)))+"-" + (parseInt(tempScore2.charAt(2))-1);
+		teamsScore[teams.indexOf(gamesTeamB[matchNum])] = tempScore;
+		teamsScore[teams.indexOf(gamesTeamA[matchNum])] = tempScore2;
+		subtractToMatrix(gamesTeamB[matchNum],gamesTeamA[matchNum] );
+		
+		
+		//console.log(gamesTeamA[matchNum] + " score B undo: " + teamsScore[teams.indexOf(gamesTeamA[matchNum])]);
+		//console.log(gamesTeamB[matchNum] + " score B undo: " + teamsScore[teams.indexOf(gamesTeamB[matchNum])]);
+		
+		
+	}
+	else {
+		matchNum++;
+		predictMatch(matchNum, chance);
+		matchNum--;
+	}
+}
+
+
+/*
+document.addEventListener('keydown', function(event) {
+  if (event.keyCode >=65 && event.keyCode <=90) {
+  	var letter = String.fromCharCode(97+event.keyCode-65)
+    guessLetter(letter);
+  }
+  
+});
+*/
+</script>
+
+</head>
+<body onload = "drawAllGroup()">
+
+<div>
+	<span> <img id="picture" src="Images/Worlds.png" style="width:75px;height:75px;"> </img></span>
+	<span class="heading"> 2017 Worlds Championship </span>
+</div>
+
+
+<div>
+		<table id = "groupA" class="group_table table_left" >
+			<tr >
+				<th class ="header_tablerow" > Group A </th>
+			</tr>
+			<tr id = "team00" >
+				<td> <img id="picture00" src="" class="group_icon"> </img> </td>
+				<td id = "teamName00" class = "tableTeamHeader"> SKT telecom </td>
+				<td id = "teamScore00" class = "tableScore"> 0-0 </td>
+			</tr>
+			<tr id = "team01">
+				<td> <img id="picture01" src="Images/Team SKT.png" class="group_icon"> </img> </td>
+				<td id = "teamName01" class = "tableTeamHeader"> SKT telecom </td>
+				<td id = "teamScore01" class = "tableScore"> 0-0 </td>
+			</tr>
+			<tr id = "team02">
+				<td> <img id="picture02" src="Images/Team SKT.png" class="group_icon"> </img> </td>
+				<td id = "teamName02" class = "tableTeamHeader"> SKT telecom </td>
+				<td id = "teamScore02" class = "tableScore"> 0-0 </td>
+			</tr>
+			<tr id = "team03">
+				<td> <img id="picture03" src="Images/Team SKT.png" class="group_icon"> </img> </td>
+				<td id = "teamName03" class = "tableTeamHeader"> SKT telecom </td>
+				<td id = "teamScore03" class = "tableScore"> 0-0 </td>
+			</tr>
+		</table>
+		<table id = "groupA" class="group_table table_right">
+			<tr>
+				<th> Group B </th>
+			</tr>
+			<tr id = "team10">
+				<td> <img id="picture10" src="Images/Team SKT.png" class="group_icon"> </img> </td>
+				<td id = "teamName10" class = "tableTeamHeader"> SKT telecom </td>
+				<td id = "teamScore10" class = "tableScore"> 0-0 </td>
+			</tr>
+			<tr id = "team11">
+				<td> <img id="picture11" src="Images/Team SKT.png" class="group_icon"> </img> </td>
+				<td id = "teamName11" class = "tableTeamHeader"> SKT telecom </td>
+				<td id = "teamScore11" class = "tableScore"> 0-0 </td>
+			</tr>
+			<tr id = "team12">
+				<td> <img id="picture12" src="Images/Team SKT.png" class="group_icon"> </img> </td>
+				<td id = "teamName12" class = "tableTeamHeader"> SKT telecom </td>
+				<td id = "teamScore12" class = "tableScore"> 0-0 </td>
+			</tr>
+			<tr id = "team13">
+				<td> <img id="picture13" src="Images/Team SKT.png" class="group_icon"> </img> </td>
+				<td id = "teamName13" class = "tableTeamHeader"> SKT telecom </td>
+				<td id = "teamScore13" class = "tableScore"> 0-0 </td>
+			</tr>
+		</table>
+		
+		
+		
+		
+		
+		<table id = "groupA" class="group_table table_left" >
+			<tr>
+				<th > Group C </th>
+			</tr>
+			<tr id = "team20">
+				<td> <img id="picture20" src="Images/Team SKT.png" class="group_icon"> </img> </td>
+				<td id = "teamName20" class = "tableTeamHeader"> SKT telecom </td>
+				<td id = "teamScore20" class = "tableScore"> 0-0 </td>
+			</tr>
+			<tr id = "team21">
+				<td> <img id="picture21" src="Images/Team SKT.png" class="group_icon"> </img> </td>
+				<td id = "teamName21" class = "tableTeamHeader"> SKT telecom </td>
+				<td id = "teamScore21" class = "tableScore"> 0-0 </td>
+			</tr>
+			<tr id = "team22">
+				<td> <img id="picture22" src="Images/Team SKT.png" class="group_icon"> </img> </td>
+				<td id = "teamName22" class = "tableTeamHeader"> SKT telecom </td>
+				<td id = "teamScore22" class = "tableScore"> 0-0 </td>
+			</tr>
+			<tr id = "team23">
+				<td> <img id="picture23" src="Images/Team SKT.png" class="group_icon"> </img> </td>
+				<td id = "teamName23" class = "tableTeamHeader"> SKT telecom </td>
+				<td id = "teamScore23" class = "tableScore"> 0-0 </td>
+			</tr>
+		</table>
+		<table id = "groupA" class="group_table table_right" >
+			<tr>
+				<th> Group D </th>
+			</tr>
+			<tr id = "team30">
+				<td> <img id="picture30" src="Images/Team SKT.png" class="group_icon"> </img> </td>
+				<td id = "teamName30" class = "tableTeamHeader"> SKT telecom </td>
+				<td id = "teamScore30" class = "tableScore"> 0-0 </td>
+			</tr>
+			<tr id = "team31">
+				<td> <img id="picture31" src="Images/Team SKT.png" class="group_icon"> </img> </td>
+				<td id = "teamName31" class = "tableTeamHeader"> SKT telecom </td>
+				<td id = "teamScore31" class = "tableScore"> 0-0 </td>
+			</tr>
+			<tr id = "team32">
+				<td> <img id="picture32" src="Images/Team SKT.png" class="group_icon"> </img> </td>
+				<td id = "teamName32" class = "tableTeamHeader"> SKT telecom </td>
+				<td id = "teamScore32" class = "tableScore"> 0-0 </td>
+			</tr>
+			<tr id = "team33">
+				<td> <img id="picture33" src="Images/Team SKT.png" class="group_icon"> </img> </td>
+				<td id = "teamName33" class = "tableTeamHeader"> SKT telecom </td>
+				<td id = "teamScore33" class = "tableScore"> 0-0 </td>
+			</tr>
+		</table>
+</div>
+
+<div id="team_select" class="center tableTeamHeader" >
+		<p id=team_select_name><-Select a Team-></p>
+		<img id="team_select_image" class="center centerIcon" src="Images/Worlds.png""> </img> 
+		<p id=team_select_win1></p>
+		<p id=team_select_win2></p>
+		
+		<button onclick = "resetAll()" class="tool_button" >Reset</button>
+		<button onclick = "resetClean()" class="tool_button" >Current Status</button>
+</div>
+
+<div>
+	<table id = "matchTable1" class="matchTable table_left">
+		<tr>
+			<th> Win % <th>
+			<th>  <th>
+			<th> Win % <th>
+		</tr>
+	</table>
+	
+	<table id = "matchTable2" class="matchTable table_right">
+		<tr>
+			<th> Win % <th>
+			<th>  <th>
+			<th> Win % <th>
+		</tr>
+	</table>
+<div>
+
+<p>Notes:
+<br />
+-[% Knockout Stage] indicates the probability the team is guaranteed to make it 
+into the knockout stage without the need to play any tiebreakers
+<br />
+-[% Tie Breaker] indicates the probability to enter a tiebreaker scenario where the team 
+make it into knockout stage by winning the tiebreaker
+</p>
+
+
+
+
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
